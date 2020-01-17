@@ -67,7 +67,7 @@ namespace GoogleSheets
 			return files;
 		}
 
-		private static async Task ShareAsync(ServiceAccountCredential credential, string fileId, string email)
+		private static async Task<Permission> ShareAsync(ServiceAccountCredential credential, string fileId, string email)
 		{
 			var service = new DriveService(new BaseClientService.Initializer
 			{
@@ -96,7 +96,9 @@ namespace GoogleSheets
 			};
 
 			var request = service.Permissions.Create(permission, fileId);
-			await request.ExecuteAsync();
+			permission = await request.ExecuteAsync();
+
+			return permission;
 		}
 
 		private static async Task<Spreadsheet> CreateAsync(SheetsService sheetsService)
