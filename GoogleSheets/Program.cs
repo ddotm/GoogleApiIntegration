@@ -33,9 +33,15 @@ namespace GoogleSheets
 
 			BatchUpdateValuesResponse batchUpdateValuesResponse = await BatchUpdateAsync(sheetsService, createResponse.SpreadsheetId);
 
-			var fileList = await ListFilesAsync(credential);
+			var driveService = new DriveService(new BaseClientService.Initializer
+			{
+				HttpClientInitializer = credential,
+				ApplicationName = "TempoApi"
+			});
 
-			await ShareAsync(credential, createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
+			var fileList = await ListFilesAsync(driveService);
+
+			var permission = await ShareAsync(driveService, createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
 
 			Console.ReadKey();
 		}
@@ -43,18 +49,12 @@ namespace GoogleSheets
 		/// <summary>
 		/// Google Drive API -- List Files
 		/// </summary>
-		/// <param name="credential"></param>
+		/// <param name="driveService"></param>
 		/// <returns></returns>
-		private static async Task<IList<Google.Apis.Drive.v3.Data.File>> ListFilesAsync(ServiceAccountCredential credential)
+		private static async Task<IList<Google.Apis.Drive.v3.Data.File>> ListFilesAsync(DriveService driveService)
 		{
-			var service = new DriveService(new BaseClientService.Initializer
-			{
-				HttpClientInitializer = credential,
-				ApplicationName = "TempoApi"
-			});
-
-			FilesResource.ListRequest listRequest = service.Files.List();
-			listRequest.PageSize = 10;
+			FilesResource.ListRequest listRequest = driveService.Files.List();
+			listRequest.PageSize = 50;
 			listRequest.Fields = "nextPageToken, files(id, name)";
 
 			// List files.
@@ -67,14 +67,15 @@ namespace GoogleSheets
 			return files;
 		}
 
-		private static async Task<Permission> ShareAsync(ServiceAccountCredential credential, string fileId, string email)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="driveService"></param>
+		/// <param name="fileId"></param>
+		/// <param name="email"></param>
+		/// <returns></returns>
+		private static async Task<Permission> ShareAsync(DriveService driveService, string fileId, string email)
 		{
-			var service = new DriveService(new BaseClientService.Initializer
-			{
-				HttpClientInitializer = credential,
-				ApplicationName = "TempoApi"
-			});
-
 			var permission = new Permission
 			{
 				Kind = "drive#permission",
@@ -82,7 +83,7 @@ namespace GoogleSheets
 				Type = "user",
 				// currently allowed: - owner - organizer - fileOrganizer - writer - commenter - reader
 				Role = "writer",
-				EmailAddress = "dmitri.mogilevski@paradigmagency.com",
+				EmailAddress = email,
 				PermissionDetails = new List<Permission.PermissionDetailsData>
 				{
 					new Permission.PermissionDetailsData
@@ -95,12 +96,17 @@ namespace GoogleSheets
 				}
 			};
 
-			var request = service.Permissions.Create(permission, fileId);
+			var request = driveService.Permissions.Create(permission, fileId);
 			permission = await request.ExecuteAsync();
 
 			return permission;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sheetsService"></param>
+		/// <returns></returns>
 		private static async Task<Spreadsheet> CreateAsync(SheetsService sheetsService)
 		{
 			var requestBody = new Spreadsheet
@@ -120,7 +126,12 @@ namespace GoogleSheets
 			return createResponse;
 		}
 
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sheetsService"></param>
+		/// <param name="spreadsheetId"></param>
+		/// <returns></returns>
 		private static async Task<BatchUpdateValuesResponse> BatchUpdateAsync(SheetsService sheetsService, string spreadsheetId)
 		{
 			// How the input data should be interpreted.
