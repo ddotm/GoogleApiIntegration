@@ -64,19 +64,9 @@ namespace GoogleSheets
 			// List files.
 			IList<Google.Apis.Drive.v3.Data.File> files = (await listRequest.ExecuteAsync())
 				.Files;
-			Console.WriteLine("Files:");
-			if (files != null && files.Count > 0)
-			{
-				foreach (var file in files)
-				{
-					Console.WriteLine("{0} ({1})", file.Name, file.Id);
-				}
-			}
-			else
-			{
-				Console.WriteLine("No files found.");
-			}
-
+			
+			Console.WriteLine("File list:");
+			Console.WriteLine(JsonConvert.SerializeObject(files));
 		}
 
 		private static async Task<Spreadsheet> CreateAsync(SheetsService sheetsService)
