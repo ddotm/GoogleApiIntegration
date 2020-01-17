@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,11 +20,6 @@ namespace GoogleSheets
 	internal class Program
 	{
 		private static async Task Main(string[] args)
-		{
-			await CreateSheetAsync();
-		}
-
-		private static async Task CreateSheetAsync()
 		{
 			ServiceAccountCredential credential = CreateGoogleCredential();
 
@@ -37,7 +33,9 @@ namespace GoogleSheets
 
 			BatchUpdateValuesResponse batchUpdateValuesResponse = await BatchUpdateAsync(sheetsService, createResponse.SpreadsheetId);
 
-			await ListFilesAsync(credential, createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
+			var fileList = await ListFilesAsync(credential);
+
+			await ShareAsync(credential, createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
 
 			Console.ReadKey();
 		}
@@ -46,10 +44,8 @@ namespace GoogleSheets
 		/// Google Drive API -- List Files
 		/// </summary>
 		/// <param name="credential"></param>
-		/// <param name="fileId"></param>
-		/// <param name="email"></param>
 		/// <returns></returns>
-		private static async Task ListFilesAsync(ServiceAccountCredential credential, string fileId, string email)
+		private static async Task<IList<Google.Apis.Drive.v3.Data.File>> ListFilesAsync(ServiceAccountCredential credential)
 		{
 			var service = new DriveService(new BaseClientService.Initializer
 			{
@@ -64,9 +60,43 @@ namespace GoogleSheets
 			// List files.
 			IList<Google.Apis.Drive.v3.Data.File> files = (await listRequest.ExecuteAsync())
 				.Files;
-			
+
 			Console.WriteLine("File list:");
 			Console.WriteLine(JsonConvert.SerializeObject(files));
+
+			return files;
+		}
+
+		private static async Task ShareAsync(ServiceAccountCredential credential, string fileId, string email)
+		{
+			var service = new DriveService(new BaseClientService.Initializer
+			{
+				HttpClientInitializer = credential,
+				ApplicationName = "TempoApi"
+			});
+
+			var permission = new Permission
+			{
+				Kind = "drive#permission",
+				// The type of the grantee.Valid values are: -user - group - domain - anyone
+				Type = "user",
+				// currently allowed: - owner - organizer - fileOrganizer - writer - commenter - reader
+				Role = "writer",
+				EmailAddress = "dmitri.mogilevski@paradigmagency.com",
+				PermissionDetails = new List<Permission.PermissionDetailsData>
+				{
+					new Permission.PermissionDetailsData
+					{
+						// currently possible: -file - member
+						PermissionType = "member",
+						// currently possible: - organizer - fileOrganizer - writer - commenter - reader
+						Role = "writer"
+					}
+				}
+			};
+
+			var request = service.Permissions.Create(permission, fileId);
+			await request.ExecuteAsync();
 		}
 
 		private static async Task<Spreadsheet> CreateAsync(SheetsService sheetsService)
@@ -123,7 +153,6 @@ namespace GoogleSheets
 				}
 			};
 
-			// TODO: Assign values to desired properties of `requestBody`:
 			var requestBody = new BatchUpdateValuesRequest
 			{
 				ValueInputOption = valueInputOption,
@@ -142,7 +171,6 @@ namespace GoogleSheets
 
 		private static ServiceAccountCredential CreateGoogleCredential()
 		{
-			// GoogleCredential.FromFile("tempo-265222-88dada7b17c3.json");
 			ServiceAccountCredential credential;
 			string[] scopes =
 			{
