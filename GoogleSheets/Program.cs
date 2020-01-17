@@ -61,7 +61,7 @@ namespace GoogleSheets
 		private static async Task<BatchUpdateValuesResponse> BatchUpdateAsync(SheetsService sheetsService, string spreadsheetId)
 		{
 			// How the input data should be interpreted.
-			const string valueInputOption = "USER_ENTERED"; // TODO: Update placeholder value.
+			const string valueInputOption = "USER_ENTERED";
 
 			// The new values to apply to the spreadsheet.
 			var data = new List<ValueRange>
@@ -96,8 +96,8 @@ namespace GoogleSheets
 			var requestBody = new BatchUpdateValuesRequest
 			{
 				ValueInputOption = valueInputOption,
-				Data = data,
-				IncludeValuesInResponse = true
+				IncludeValuesInResponse = true,
+				Data = data
 			};
 
 			SpreadsheetsResource.ValuesResource.BatchUpdateRequest batchUpdateRequest = sheetsService.Spreadsheets.Values.BatchUpdate(requestBody, spreadsheetId);
