@@ -4,16 +4,13 @@ using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
+using Google.Apis.Http;
 using Google.Apis.Util.Store;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Http;
+using GoogleApiIntegration;
 
 namespace GoogleSheets
 {
@@ -21,7 +18,7 @@ namespace GoogleSheets
 	{
 		private static async Task Main(string[] args)
 		{
-			ServiceAccountCredential credential = CreateGoogleCredential();
+			ServiceAccountCredential credential = GoogleCredentialManager.CreateGoogleCredential("tempo-api@tempo-265222.iam.gserviceaccount.com", "tempo-265222-88dada7b17c3.json");
 
 			var sheetsService = new SheetsService(new BaseClientService.Initializer
 			{
@@ -196,34 +193,6 @@ namespace GoogleSheets
 			Console.WriteLine(JsonConvert.SerializeObject(batchUpdateResponse));
 
 			return batchUpdateResponse;
-		}
-
-		private static ServiceAccountCredential CreateGoogleCredential()
-		{
-			ServiceAccountCredential credential;
-			string[] scopes =
-			{
-				SheetsService.Scope.Spreadsheets,
-				SheetsService.Scope.Drive,
-				SheetsService.Scope.DriveFile
-			};
-			var serviceAccountEmail = "tempo-api@tempo-265222.iam.gserviceaccount.com";
-			var jsonFile = "tempo-265222-88dada7b17c3.json";
-			using (Stream stream = new FileStream(@jsonFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				credential = (ServiceAccountCredential)
-					GoogleCredential.FromStream(stream).UnderlyingCredential;
-
-				var initializer = new ServiceAccountCredential.Initializer(credential.Id)
-				{
-					User = serviceAccountEmail,
-					Key = credential.Key,
-					Scopes = scopes
-				};
-				credential = new ServiceAccountCredential(initializer);
-			}
-
-			return credential;
 		}
 	}
 }
