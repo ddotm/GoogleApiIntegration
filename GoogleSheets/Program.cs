@@ -15,7 +15,7 @@ namespace GoogleSheets
 			var credential = GoogleCredentialManager.CreateGoogleCredential(serviceAcctEmail, configFile);
 
 			var sheetsApi = new GoogleSheetsApi(appName, credential);
-			var createResponse = await sheetsApi.CreateAsync("Jack's Great Spreadsheet");
+			var createResponse = await sheetsApi.CreateAsync("Some sheet");
 			Console.WriteLine("Create sheet response");
 			Console.WriteLine(JsonConvert.SerializeObject(createResponse));
 			var batchUpdateValuesResponse = await sheetsApi.BatchUpdateAsync(createResponse.SpreadsheetId);
