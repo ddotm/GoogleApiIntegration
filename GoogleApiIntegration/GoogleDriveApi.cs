@@ -36,6 +36,20 @@ namespace GoogleApiIntegration
 			return files;
 		}
 
+		public async Task<string> DeleteAsync(string fileId)
+		{
+			FilesResource.DeleteRequest deleteRequest = _driveService.Files.Delete(fileId);
+			var deleteResponse = await deleteRequest.ExecuteAsync();
+			return deleteResponse;
+		}
+
+		public async Task<string> EmptyTrashAsync()
+		{
+			FilesResource.EmptyTrashRequest emptyTrashRequest = _driveService.Files.EmptyTrash();
+			var emptyTrashResponse = await emptyTrashRequest.ExecuteAsync();
+			return emptyTrashResponse;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
