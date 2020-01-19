@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GoogleApiIntegration
 {
@@ -17,7 +15,7 @@ namespace GoogleApiIntegration
 		{
 			_sheetsService = new SheetsService(new BaseClientService.Initializer
 			{
-				ApplicationName = "TempoApi",
+				ApplicationName = appName,
 				HttpClientInitializer = serviceAccountCredential
 			});
 		}
@@ -33,16 +31,13 @@ namespace GoogleApiIntegration
 			{
 				Properties = new SpreadsheetProperties
 				{
-					Title = "Jack's Great Spreadsheet"
+					Title = title
 				}
 			};
 
 			SpreadsheetsResource.CreateRequest createRequest = _sheetsService.Spreadsheets.Create(requestBody);
 
 			Spreadsheet createResponse = await createRequest.ExecuteAsync();
-			Console.WriteLine("Create sheet response");
-
-			Console.WriteLine(JsonConvert.SerializeObject(createResponse));
 			return createResponse;
 		}
 
@@ -110,8 +105,6 @@ namespace GoogleApiIntegration
 			SpreadsheetsResource.ValuesResource.BatchUpdateRequest batchUpdateRequest = _sheetsService.Spreadsheets.Values.BatchUpdate(requestBody, spreadsheetId);
 
 			BatchUpdateValuesResponse batchUpdateResponse = await batchUpdateRequest.ExecuteAsync();
-			Console.WriteLine("Batch update sheet response");
-			Console.WriteLine(JsonConvert.SerializeObject(batchUpdateResponse));
 
 			return batchUpdateResponse;
 		}
