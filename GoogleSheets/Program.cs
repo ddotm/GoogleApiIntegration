@@ -14,13 +14,16 @@ namespace GoogleSheets
 			const string serviceAcctEmail = "tempo-api@tempo-265222.iam.gserviceaccount.com";
 			const string configFile = "tempo-265222-88dada7b17c3.json";
 			const string appName = "TempoApi";
+			const string spreadsheetTitle = "Important exported info";
+			const string sheetTitle = "You precious data";
+
 			var credential = GoogleCredentialManager.CreateGoogleCredential(serviceAcctEmail, configFile);
 
 			var sheetsApi = new GoogleSheetsApi(appName, credential);
-			var createResponse = await sheetsApi.CreateAsync("Test spreadsheet");
+			var createResponse = await sheetsApi.CreateAsync(spreadsheetTitle, sheetTitle);
 			Console.WriteLine("Create sheet response");
 			Console.WriteLine(JsonConvert.SerializeObject(createResponse));
-			var batchUpdateValuesResponse = await sheetsApi.BatchUpdateAsync(createResponse.SpreadsheetId);
+			var batchUpdateValuesResponse = await sheetsApi.BatchUpdateAsync(createResponse.SpreadsheetId, sheetTitle);
 			Console.WriteLine("Batch update sheet response");
 			Console.WriteLine(JsonConvert.SerializeObject(batchUpdateValuesResponse));
 

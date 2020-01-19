@@ -24,14 +24,32 @@ namespace GoogleApiIntegration
 		/// 
 		/// </summary>
 		/// <param name="title"></param>
+		/// <param name="sheetTitle"></param>
 		/// <returns></returns>
-		public async Task<Spreadsheet> CreateAsync(string title)
+		public async Task<Spreadsheet> CreateAsync(string title, string sheetTitle)
 		{
 			var requestBody = new Spreadsheet
 			{
 				Properties = new SpreadsheetProperties
 				{
 					Title = title
+				},
+				Sheets = new List<Sheet>
+				{
+					new Sheet
+					{
+						Properties = new SheetProperties
+						{
+							Title = sheetTitle,
+							TabColor = new Color
+							{
+								Red = 0.9F,
+								Green = 0.1F,
+								Blue = 0.1F,
+								Alpha = 0.7F
+							}
+						}
+					}
 				}
 			};
 
@@ -41,12 +59,38 @@ namespace GoogleApiIntegration
 			return createResponse;
 		}
 
+		public async Task<BatchUpdateSpreadsheetResponse> RenameSheet(string spreadsheetId, int sheetId, string oldName, string newName)
+		{
+			var req = new BatchUpdateSpreadsheetRequest
+			{
+				Requests = new List<Request>
+				{
+					new Request
+					{
+						UpdateSheetProperties = new UpdateSheetPropertiesRequest
+						{
+							Properties = new SheetProperties
+							{
+								SheetId = sheetId,
+								Title = newName
+							}
+						}
+					}
+				}
+			};
+			SpreadsheetsResource.BatchUpdateRequest request = new SpreadsheetsResource.BatchUpdateRequest(_sheetsService, req, spreadsheetId);
+			var response = await request.ExecuteAsync();
+
+			return response;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="spreadsheetId"></param>
+		/// <param name="sheetTitle"></param>
 		/// <returns></returns>
-		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId)
+		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId, string sheetTitle)
 		{
 			// How the input data should be interpreted.
 			const string valueInputOption = "USER_ENTERED";
@@ -56,7 +100,7 @@ namespace GoogleApiIntegration
 			{
 				new ValueRange
 				{
-					Range = "Sheet1!A1:C1",
+					Range = $"{sheetTitle}!A1:C1",
 					Values = new List<IList<object>>
 					{
 						new List<object>
@@ -69,7 +113,7 @@ namespace GoogleApiIntegration
 				},
 				new ValueRange
 				{
-					Range = "Sheet1!A2:C2",
+					Range = $"{sheetTitle}!A2:C2",
 					Values = new List<IList<object>>
 					{
 						new List<object>
@@ -82,7 +126,7 @@ namespace GoogleApiIntegration
 				},
 				new ValueRange
 				{
-					Range = "Sheet1!A3:C3",
+					Range = $"{sheetTitle}!A3:C3",
 					Values = new List<IList<object>>
 					{
 						new List<object>
