@@ -42,6 +42,7 @@ namespace GoogleSheets
 			var fileList = await ListFilesAsync(driveService);
 
 			var permission = await ShareAsync(driveService, createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
+			permission = await ShareAsync(driveService, createResponse.SpreadsheetId, "jackporter05@gmail.com");
 
 			Console.ReadKey();
 		}
@@ -142,25 +143,40 @@ namespace GoogleSheets
 			{
 				new ValueRange
 				{
-					Range = "Sheet1!A1:B1",
+					Range = "Sheet1!A1:C1",
 					Values = new List<IList<object>>
 					{
 						new List<object>
 						{
 							"First name",
-							"Last name"
+							"Last name",
+							"Email"
 						}
 					}
 				},
 				new ValueRange
 				{
-					Range = "Sheet1!A2:B2",
+					Range = "Sheet1!A2:C2",
 					Values = new List<IList<object>>
 					{
 						new List<object>
 						{
 							"Jack",
-							"Porter"
+							"Porter",
+							"someemail@something.com"
+						}
+					}
+				},
+				new ValueRange
+				{
+					Range = "Sheet1!A3:C3",
+					Values = new List<IList<object>>
+					{
+						new List<object>
+						{
+							"Tim",
+							"Eck",
+							"teck@something.com"
 						}
 					}
 				}
