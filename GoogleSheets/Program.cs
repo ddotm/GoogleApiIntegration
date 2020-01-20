@@ -23,7 +23,9 @@ namespace GoogleSheets
 			var createResponse = await sheetsApi.CreateAsync(spreadsheetTitle, sheetTitle);
 			Console.WriteLine("Create sheet response");
 			Console.WriteLine(JsonConvert.SerializeObject(createResponse));
-			var batchUpdateValuesResponse = await sheetsApi.BatchUpdateAsync(createResponse.SpreadsheetId, sheetTitle);
+			var headers = GetHeaders();
+			var data = GetData();
+			var batchUpdateValuesResponse = await sheetsApi.BatchUpdateAsync(createResponse.SpreadsheetId, sheetTitle, headers, data);
 			Console.WriteLine("Batch update sheet response");
 			Console.WriteLine(JsonConvert.SerializeObject(batchUpdateValuesResponse));
 
@@ -50,6 +52,41 @@ namespace GoogleSheets
 
 			string emptyTrashResponse = await driveApi.EmptyTrashAsync();
 			Console.WriteLine($"Empty trash response: {emptyTrashResponse}");
+		}
+
+		private static List<object> GetHeaders()
+		{
+			return new List<object>
+			{
+				"First name",
+				"Last name",
+				"Email"
+			};
+		}
+
+		private static List<IList<object>> GetData()
+		{
+			return new List<IList<object>>
+			{
+				new List<object>
+				{
+					"Jack",
+					"Porter",
+					"jporter@email.com"
+				},
+				new List<object>
+				{
+					"Tim",
+					"Eck",
+					"teck@email.com"
+				},
+				new List<object>
+				{
+					"Dmitri",
+					"Mogilevski",
+					"dmogilevski@email.com"
+				}
+			};
 		}
 	}
 }

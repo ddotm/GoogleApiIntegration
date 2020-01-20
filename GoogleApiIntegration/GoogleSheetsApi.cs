@@ -47,6 +47,10 @@ namespace GoogleApiIntegration
 								Green = 0.1F,
 								Blue = 0.1F,
 								Alpha = 0.7F
+							},
+							GridProperties = new GridProperties
+							{
+								ColumnCount = 50
 							}
 						}
 					}
@@ -89,53 +93,29 @@ namespace GoogleApiIntegration
 		/// </summary>
 		/// <param name="spreadsheetId"></param>
 		/// <param name="sheetTitle"></param>
+		/// <param name="headers"></param>
+		/// <param name="data"></param>
 		/// <returns></returns>
-		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId, string sheetTitle)
+		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId, string sheetTitle, List<object> headers, List<IList<object>> data)
 		{
 			// How the input data should be interpreted.
 			const string valueInputOption = "USER_ENTERED";
 
 			// The new values to apply to the spreadsheet.
-			var data = new List<ValueRange>
+			var reqData = new List<ValueRange>
 			{
 				new ValueRange
 				{
 					Range = $"{sheetTitle}!A1:C1",
 					Values = new List<IList<object>>
 					{
-						new List<object>
-						{
-							"First name",
-							"Last name",
-							"Email"
-						}
+						headers
 					}
 				},
 				new ValueRange
 				{
-					Range = $"{sheetTitle}!A2:C2",
-					Values = new List<IList<object>>
-					{
-						new List<object>
-						{
-							"Jack",
-							"Porter",
-							"someemail@something.com"
-						}
-					}
-				},
-				new ValueRange
-				{
-					Range = $"{sheetTitle}!A3:C3",
-					Values = new List<IList<object>>
-					{
-						new List<object>
-						{
-							"Tim",
-							"Eck",
-							"teck@something.com"
-						}
-					}
+					Range = $"{sheetTitle}!A2:C4",
+					Values = data
 				}
 			};
 
@@ -143,7 +123,7 @@ namespace GoogleApiIntegration
 			{
 				ValueInputOption = valueInputOption,
 				IncludeValuesInResponse = true,
-				Data = data
+				Data = reqData
 			};
 
 			SpreadsheetsResource.ValuesResource.BatchUpdateRequest batchUpdateRequest = _sheetsService.Spreadsheets.Values.BatchUpdate(requestBody, spreadsheetId);
