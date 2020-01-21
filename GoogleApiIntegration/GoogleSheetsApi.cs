@@ -96,25 +96,24 @@ namespace GoogleApiIntegration
 		/// <param name="headers"></param>
 		/// <param name="data"></param>
 		/// <returns></returns>
-		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId, string sheetTitle, List<object> headers, List<IList<object>> data)
+		public async Task<BatchUpdateValuesResponse> BatchUpdateAsync(string spreadsheetId, string sheetTitle, List<IList<object>> headers, List<IList<object>> data)
 		{
 			// How the input data should be interpreted.
 			const string valueInputOption = "USER_ENTERED";
 
+			var headerRange = CalculateCellRange(headers, "A", 1);
+			var dataRange = CalculateCellRange(data, "A", 2);
 			// The new values to apply to the spreadsheet.
 			var reqData = new List<ValueRange>
 			{
 				new ValueRange
 				{
-					Range = $"{sheetTitle}!A1:C1",
-					Values = new List<IList<object>>
-					{
-						headers
-					}
+					Range = $"{sheetTitle}!{headerRange}",
+					Values = headers
 				},
 				new ValueRange
 				{
-					Range = $"{sheetTitle}!A2:C4",
+					Range = $"{sheetTitle}!{dataRange}",
 					Values = data
 				}
 			};
@@ -132,5 +131,18 @@ namespace GoogleApiIntegration
 
 			return batchUpdateResponse;
 		}
+
+		private string CalculateCellRange(List<IList<object>> data, string startCol, int startRow)
+		{
+			int endRow = startRow + data.Count - 1;
+			var colHelper = new ColHelper(26);
+			var endColName = colHelper.NumToCol(data[0].Count);
+			
+			return $"{startCol}{startRow}:{endColName}{endRow}";
+		}
+
+
+
+		
 	}
 }

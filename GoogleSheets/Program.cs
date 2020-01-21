@@ -34,9 +34,10 @@ namespace GoogleSheets
 			Console.WriteLine("File list:");
 			Console.WriteLine(JsonConvert.SerializeObject(fileList));
 			var permission = await driveApi.ShareAsync(createResponse.SpreadsheetId, "dmitri.mogilevski@paradigmagency.com");
-			// permission = await ShareAsync(driveService, createResponse.SpreadsheetId, "jackporter05@gmail.com");
+			// permission = await driveApi.ShareAsync(createResponse.SpreadsheetId, "jackporter05@gmail.com");
+			// permission = await driveApi.ShareAsync(createResponse.SpreadsheetId,  "timothyjohneck@gmail.com");
 
-			// await DeleteAllExceptAsync(fileList, createResponse.SpreadsheetId, driveApi);
+			await DeleteAllExceptAsync(fileList, createResponse.SpreadsheetId, driveApi);
 
 			Console.ReadKey();
 		}
@@ -54,13 +55,17 @@ namespace GoogleSheets
 			Console.WriteLine($"Empty trash response: {emptyTrashResponse}");
 		}
 
-		private static List<object> GetHeaders()
+		private static List<IList<object>> GetHeaders()
 		{
-			return new List<object>
+			return new List<IList<object>>
 			{
-				"First name",
-				"Last name",
-				"Email"
+				new List<object>
+				{
+					"First name",
+					"Last name",
+					"Email",
+					"Note"
+				}
 			};
 		}
 
@@ -72,19 +77,22 @@ namespace GoogleSheets
 				{
 					"Jack",
 					"Porter",
-					"jporter@email.com"
+					"jporter@email.com",
+					"Jack's note"
 				},
 				new List<object>
 				{
 					"Tim",
 					"Eck",
-					"teck@email.com"
+					"teck@email.com",
+					"Tim's note"
 				},
 				new List<object>
 				{
 					"Dmitri",
 					"Mogilevski",
-					"dmogilevski@email.com"
+					"dmogilevski@email.com",
+					"Dmitri's note"
 				}
 			};
 		}
