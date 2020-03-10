@@ -3,6 +3,7 @@ using GoogleApiIntegration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GoogleSheets
@@ -69,8 +70,15 @@ namespace GoogleSheets
 			};
 		}
 
+		private static object GetPropValue(object src, string propName)
+		{
+			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
+		}
+
 		private static List<IList<object>> GetData()
 		{
+			var data = new List<IList<object>>();
+
 			var sourceDataItems = new List<DataClass>
 			{
 				new DataClass
@@ -79,6 +87,13 @@ namespace GoogleSheets
 					LastName = "Mogilevski",
 					Email = "dmogilevski@gmail.com",
 					Note = "Dmitri's note"
+				},
+				new DataClass
+				{
+					FirstName = "Jack",
+					LastName = "Porter",
+					Email = "jporter@someemail.com",
+					Note = "I just wanted to jot this down"
 				}
 			};
 			var colNames = new List<string>
@@ -88,35 +103,45 @@ namespace GoogleSheets
 				"Email",
 				"Note"
 			};
+
 			foreach (var sourceDataItem in sourceDataItems)
 			{
+				var dataItem = new List<object>();
+				foreach (var colName in colNames)
+				{
+					var val = GetPropValue(sourceDataItem, colName);
+					dataItem.Add(val);
+				}
 
+				data.Add(dataItem);
 			}
 
-			return new List<IList<object>>
-			{
-				new List<object>
-				{
-					"Jack",
-					"Porter",
-					"jporter@email.com",
-					"Jack's note"
-				},
-				new List<object>
-				{
-					"Tim",
-					"Eck",
-					"teck@email.com",
-					"Tim's note"
-				},
-				new List<object>
-				{
-					"Dmitri",
-					"Mogilevski",
-					"dmogilevski@email.com",
-					"Dmitri's note"
-				}
-			};
+			return data;
+
+			// return new List<IList<object>>
+			// {
+			// 	new List<object>
+			// 	{
+			// 		"Jack",
+			// 		"Porter",
+			// 		"jporter@email.com",
+			// 		"Jack's note"
+			// 	},
+			// 	new List<object>
+			// 	{
+			// 		"Tim",
+			// 		"Eck",
+			// 		"teck@email.com",
+			// 		"Tim's note"
+			// 	},
+			// 	new List<object>
+			// 	{
+			// 		"Dmitri",
+			// 		"Mogilevski",
+			// 		"dmogilevski@email.com",
+			// 		"Dmitri's note"
+			// 	}
+			// };
 		}
 	}
 }
