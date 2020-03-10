@@ -3,7 +3,6 @@ using GoogleApiIntegration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GoogleSheets
@@ -70,6 +69,17 @@ namespace GoogleSheets
 			};
 		}
 
+		private static List<string> GetColNames()
+		{
+			return new List<string>
+			{
+				"FirstName",
+				"LastName",
+				"Email",
+				"Note"
+			};
+		}
+
 		private static object GetPropValue(object src, string propName)
 		{
 			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
@@ -94,15 +104,16 @@ namespace GoogleSheets
 					LastName = "Porter",
 					Email = "jporter@someemail.com",
 					Note = "I just wanted to jot this down"
+				},
+				new DataClass
+				{
+					FirstName = "Tim",
+					LastName = "Eck",
+					Email = "teck@someemail.com",
+					Note = "Eck note"
 				}
 			};
-			var colNames = new List<string>
-			{
-				"FirstName",
-				"LastName",
-				"Email",
-				"Note"
-			};
+			var colNames = GetColNames();
 
 			foreach (var sourceDataItem in sourceDataItems)
 			{
@@ -117,31 +128,6 @@ namespace GoogleSheets
 			}
 
 			return data;
-
-			// return new List<IList<object>>
-			// {
-			// 	new List<object>
-			// 	{
-			// 		"Jack",
-			// 		"Porter",
-			// 		"jporter@email.com",
-			// 		"Jack's note"
-			// 	},
-			// 	new List<object>
-			// 	{
-			// 		"Tim",
-			// 		"Eck",
-			// 		"teck@email.com",
-			// 		"Tim's note"
-			// 	},
-			// 	new List<object>
-			// 	{
-			// 		"Dmitri",
-			// 		"Mogilevski",
-			// 		"dmogilevski@email.com",
-			// 		"Dmitri's note"
-			// 	}
-			// };
 		}
 	}
 }
