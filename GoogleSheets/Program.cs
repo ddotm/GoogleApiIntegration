@@ -37,7 +37,7 @@ namespace GoogleSheets
 			// permission = await driveApi.ShareAsync(createResponse.SpreadsheetId, "jackporter05@gmail.com");
 			// permission = await driveApi.ShareAsync(createResponse.SpreadsheetId,  "timothyjohneck@gmail.com");
 
-			await DeleteAllExceptAsync(fileList, createResponse.SpreadsheetId, driveApi);
+			// await DeleteAllExceptAsync(fileList, createResponse.SpreadsheetId, driveApi);
 
 			Console.ReadKey();
 		}
@@ -71,6 +71,28 @@ namespace GoogleSheets
 
 		private static List<IList<object>> GetData()
 		{
+			var sourceDataItems = new List<DataClass>
+			{
+				new DataClass
+				{
+					FirstName = "Dmitri",
+					LastName = "Mogilevski",
+					Email = "dmogilevski@gmail.com",
+					Note = "Dmitri's note"
+				}
+			};
+			var colNames = new List<string>
+			{
+				"FirstName",
+				"LastName",
+				"Email",
+				"Note"
+			};
+			foreach (var sourceDataItem in sourceDataItems)
+			{
+
+			}
+
 			return new List<IList<object>>
 			{
 				new List<object>
