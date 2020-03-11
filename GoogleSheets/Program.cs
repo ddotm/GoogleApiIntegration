@@ -3,6 +3,7 @@ using GoogleApiIntegration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GoogleSheets
@@ -82,7 +83,7 @@ namespace GoogleSheets
 
 		private static object GetPropValue(object src, string propName)
 		{
-			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
+			return src?.GetType().GetProperty(propName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?.GetValue(src, null);
 		}
 
 		private static List<IList<object>> GetData()
